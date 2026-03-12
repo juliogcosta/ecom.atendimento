@@ -1,6 +1,9 @@
+server:
+  port: 8080
+
 spring:
   application:
-    name: assistencia-atendimento-service
+    name: assistencia.atendimento
 
   cloud:
     config:
@@ -55,18 +58,33 @@ spring:
       queue: atendimento.projection.queue
       routing-key: atendimento.event
 
-server:
-  port: 8080
-
+# Management Security Configuration
 management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: [b3-multi, w3c]
+      produce: [b3-multi, w3c]
+      type: b3-multi
+  observations:
+    enabled: true
+  security:
+    allowed-ips: "127.0.0.1,::1"
+    allowed-subnets: "10.10.0.0/8,172.16.0.0/12,192.168.0.0/16"
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
   metrics:
     export:
       prometheus:
         enabled: true
+
 
 logging:
   level:
@@ -90,6 +108,40 @@ db:
 exception:
   handle:
     stackTrace: false
+
+# JWT Configuration (yc.pr library)
+yc:
+  app:
+    log:
+      error:
+        trace:
+          print: false  # true para debug
+  security:
+    keys:
+      accessToken:
+        expirationMinutes: 259200
+        secret: AR35cal3wrr8ZW80F7Rybj8QjdejPpl6BI7cYZBEN8UwcBWovpT25z8YRjkyQ1dwqj1uCT9SjI8KUWyoqzz8lQ
+      refreshToken:
+        secret: N85cal3wrr8ZW80UybjPpEWovpTyQl6Bj8QjdeI7cYZBwcBAR3F7R1dwqjKUWyo25z8YRjkqzz8lQ1uCT9Sj8I
+        expirationDays: 30
+  api:
+    management:
+      server:
+        log:
+          control:
+            display: true
+            data:
+              persistence:
+                ttl: 2000
+
+# HTTP Metrics Configuration
+ecom:
+  atendimento:
+    metrics:
+      enabled: true
+      json-file-path: ./data/ecom-atendimento-http-metrics.json
+      csv-export-path: ./data/ecom-atendimento-http-metrics.csv
+      max-in-memory: 10000
 
 # Eureka Client Configuration
 eureka:

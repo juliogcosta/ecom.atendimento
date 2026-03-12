@@ -103,6 +103,53 @@
 			<optional>true</optional>
 		</dependency>
 
+
+	<!-- Spring Security -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-security</artifactId>
+	</dependency>
+
+	<!-- YC PR Library (Security, JWT, User models) -->
+	<dependency>
+		<groupId>com.yc</groupId>
+		<artifactId>yc.pr</artifactId>
+		<version>0.0.1</version>
+		<exclusions>
+			<exclusion>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+
+	<!-- YC Utils (base Controller) -->
+	<dependency>
+		<groupId>com.yc</groupId>
+		<artifactId>yc.utils</artifactId>
+		<version>0.0.1</version>
+		<exclusions>
+			<exclusion>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>com.yc</groupId>
+				<artifactId>yc.pr</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+
+	<!-- Loco3 (para CredentialImpl) -->
+	<dependency>
+		<groupId>br.edu.ufrn</groupId>
+		<artifactId>ufrn.loco3</artifactId>
+		<version>0.0.1</version>
+	</dependency>
 		<!-- Spring Cloud -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

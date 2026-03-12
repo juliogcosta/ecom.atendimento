@@ -1,5 +1,6 @@
 package com.ecom.atendimento.domain.command;
 
+import com.ecom.atendimento.infrastructure.security.Authorizable;
 import com.ecom.core.cqrs.domain.command.Command;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,7 +18,7 @@ import java.util.UUID;
  */
 @Getter
 @ToString(callSuper = true)
-public class OcorrenciaCommand extends Command {
+public class OcorrenciaCommand extends Command implements Authorizable {
 
     private final List<String> ocorrencias;
 
@@ -44,5 +45,13 @@ public class OcorrenciaCommand extends Command {
         this.ocorrencias = ocorrencias.stream()
                 .map(String::trim)
                 .toList();
+    }
+
+    public String [] toWrite() {
+    	return new String[] { "GERENTE", "ADMINISTRADOR" };
+    }
+    
+    public String [] toRead() {
+    	return new String[] { "GERENTE", "ADMINISTRADOR" };
     }
 }

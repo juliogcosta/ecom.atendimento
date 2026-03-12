@@ -1,5 +1,6 @@
 package com.ecom.atendimento.domain.command;
 
+import com.ecom.atendimento.infrastructure.security.Authorizable;
 import com.ecom.core.cqrs.domain.command.Command;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +17,7 @@ import java.util.UUID;
  */
 @Getter
 @ToString(callSuper = true)
-public class FinalizarCommand extends Command {
+public class FinalizarCommand extends Command implements Authorizable {
 
     @JsonCreator
     public FinalizarCommand(@JsonProperty("aggregateId") UUID aggregateId) {
@@ -25,5 +26,13 @@ public class FinalizarCommand extends Command {
         if (aggregateId == null) {
             throw new IllegalArgumentException("AggregateId não pode ser nulo");
         }
+    }
+
+    public String [] toWrite() {
+    	return new String[] { "GERENTE", "ADMINISTRADOR" };
+    }
+    
+    public String [] toRead() {
+    	return new String[] { "GERENTE", "ADMINISTRADOR" };
     }
 }

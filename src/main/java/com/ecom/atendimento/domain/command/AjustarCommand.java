@@ -1,6 +1,7 @@
 package com.ecom.atendimento.domain.command;
 
 import com.ecom.atendimento.domain.valueobject.*;
+import com.ecom.atendimento.infrastructure.security.Authorizable;
 import com.ecom.core.cqrs.domain.command.Command;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +17,7 @@ import java.util.UUID;
  */
 @Getter
 @ToString(callSuper = true)
-public class AjustarCommand extends Command {
+public class AjustarCommand extends Command implements Authorizable {
 
     private final String descricao;          // Opcional
     private final Prestador prestador;        // Opcional
@@ -58,5 +59,13 @@ public class AjustarCommand extends Command {
         this.origem = origem;
         this.destino = destino;
         this.items = items;
+    }
+
+    public String [] toWrite() {
+    	return new String[] { "GERENTE", "ADMINISTRADOR" };
+    }
+    
+    public String [] toRead() {
+    	return new String[] { "GERENTE", "ADMINISTRADOR" };
     }
 }
