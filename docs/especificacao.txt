@@ -1,0 +1,276 @@
+
+● API ATENDIMENTO - DOCUMENTAÇÃO DE INTEGRAÇÃO
+
+  Base URL: http://localhost:8080
+
+  ---
+  1. SOLICITAR ATENDIMENTO
+
+  Endpoint: POST /api/atendimento/solicitarHTTP Status: 201 CreatedDescrição: Cria um novo atendimento (não envia aggregateId - gerado pelo servidor)
+
+  Request Body:
+  {
+    "protocolo": "string (obrigatório)",
+    "tipodeocorrencia": "string (obrigatório)",
+    "cliente": {
+      "id": "number (obrigatório)",
+      "nome": "string (obrigatório)",
+      "docfiscal": {
+        "tipo": "string (obrigatório)",
+        "numero": "string (obrigatório)"
+      }
+    },
+    "veiculo": {
+      "placa": "string (obrigatório)"
+    },
+    "servico": {
+      "id": "number (obrigatório)",
+      "nome": "string (obrigatório)"
+    },
+    "base": {
+      "tipo": "string (obrigatório)",
+      "logradouro": "string (obrigatório)",
+      "numero": "string (obrigatório)",
+      "complemento": "string (opcional)",
+      "bairro": "string (obrigatório)",
+      "cidade": "string (obrigatório)",
+      "estado": "string (obrigatório)",
+      "cep": "string (obrigatório)"
+    },
+    "origem": {
+      "tipo": "string (obrigatório)",
+      "logradouro": "string (obrigatório)",
+      "numero": "string (obrigatório)",
+      "complemento": "string (opcional)",
+      "bairro": "string (obrigatório)",
+      "cidade": "string (obrigatório)",
+      "estado": "string (obrigatório)",
+      "cep": "string (obrigatório)"
+    }
+  }
+
+  Response:
+  {
+    "id": "uuid-string"
+  }
+
+  Exemplo:
+  curl -X POST http://localhost:8080/api/atendimento/solicitar \
+    -H "Content-Type: application/json" \
+    -d '{
+      "protocolo": "PROT-001",
+      "tipodeocorrencia": "Pane elétrica",
+      "cliente": {"id": 1, "nome": "João Silva", "docfiscal": {"tipo":"CPF","numero":"12345678900"}},
+      "veiculo": {"placa": "ABC-1234"},
+      "servico": {"id": 1, "nome": "Reboque"},
+      "base": {"tipo": "COMERCIAL", "logradouro": "Av Principal", "numero": "100", "bairro": "Centro", "cidade": "São Paulo", "estado": "SP", "cep": "01000000"},
+      "origem": {"tipo": "RESIDENCIAL", "logradouro": "Rua Teste", "numero": "50", "bairro": "Jardim", "cidade": "São Paulo", "estado": "SP", "cep": "02000000"}
+    }'
+
+  ---
+  2. AJUSTAR ATENDIMENTO
+
+  Endpoint: PUT /api/atendimento/ajustarHTTP Status: 200 OKDescrição: Ajusta prestador, destino, itens de cobrança (pode ser executado múltiplas vezes)
+
+  Request Body:
+  {
+    "aggregateId": "uuid (obrigatório)",
+    "descricao": "string (opcional)",
+    "prestador": {
+      "id": "number (opcional)",
+      "nome": "string (opcional)",
+      "docfiscal": {
+        "tipo": "string",
+        "numero": "string"
+      }
+    },
+    "servico": {
+      "id": "number (opcional)",
+      "nome": "string (opcional)"
+    },
+    "origem": {
+      "tipo": "string (opcional)",
+      "logradouro": "string",
+      "numero": "string",
+      "complemento": "string",
+      "bairro": "string",
+      "cidade": "string",
+      "estado": "string",
+      "cep": "string"
+    },
+    "destino": {
+      "tipo": "string (obrigatório se prestador informado)",
+      "logradouro": "string",
+      "numero": "string",
+      "complemento": "string",
+      "bairro": "string",
+      "cidade": "string",
+      "estado": "string",
+      "cep": "string"
+    },
+    "items": [
+      {
+        "nome": "string (opcional)",
+        "unidadedemedida": "string",
+        "precounitario": "number",
+        "quantidade": "number",
+        "observacao": "string"
+      }
+    ]
+  }
+
+  Response: 200 OK (sem body)
+
+  Exemplo:
+  curl -X PUT http://localhost:8080/api/atendimento/ajustar \
+    -H "Content-Type: application/json" \
+    -d '{
+      "aggregateId": "7effcbdf-05aa-472c-9c4f-d38f6620bb69",
+      "descricao": "Ajuste solicitado",
+      "prestador": {"id": 1, "nome": "Prestador Premium", "docfiscal": {"tipo":"CNPJ","numero":"12345678000190"}},
+      "destino": {"tipo": "COMERCIAL", "logradouro": "Av Destino", "numero": "200", "bairro": "Vila Nova", "cidade": "São Paulo", "estado": "SP", "cep": "03000000"},
+      "items": [{"nome": "Quilometragem", "unidadedemedida": "km", "precounitario": 550}]
+    }'
+
+  ---
+  3. CONFIRMAR ATENDIMENTO
+
+  Endpoint: PUT /api/atendimento/confirmarHTTP Status: 200 OKDescrição: Confirma o atendimento
+
+  Request Body:
+  {
+    "aggregateId": "uuid (obrigatório)"
+  }
+
+  Response: 200 OK (sem body)
+
+  Exemplo:
+  curl -X PUT http://localhost:8080/api/atendimento/confirmar \
+    -H "Content-Type: application/json" \
+    -d '{"aggregateId": "7effcbdf-05aa-472c-9c4f-d38f6620bb69"}'
+
+  ---
+  4. REGISTRAR OCORRÊNCIA
+
+  Endpoint: PUT /api/atendimento/ocorrenciaHTTP Status: 200 OKDescrição: Registra ocorrências durante atendimento (pode ser executado múltiplas vezes - acumulativo)
+
+  Request Body:
+  {
+    "aggregateId": "uuid (obrigatório)",
+    "ocorrencias": [
+      {
+        "tipo": "string (obrigatório)",
+        "descricao": "string (obrigatório)",
+        "observacao": "string (opcional)"
+      }
+    ]
+  }
+
+  Response: 200 OK (sem body)
+
+  Exemplo:
+  curl -X PUT http://localhost:8080/api/atendimento/ocorrencia \
+    -H "Content-Type: application/json" \
+    -d '{
+      "aggregateId": "7effcbdf-05aa-472c-9c4f-d38f6620bb69",
+      "ocorrencias": [
+        {"tipo": "CHEGADA_LOCAL", "descricao": "Prestador chegou ao local"},
+        {"tipo": "INICIO_ATENDIMENTO", "descricao": "Início do reboque"}
+      ]
+    }'
+
+  ---
+  5. FINALIZAR ATENDIMENTO
+
+  Endpoint: PUT /api/atendimento/finalizarHTTP Status: 200 OKDescrição: Finaliza o atendimento (dispara integração com Financeiro via RabbitMQ)
+
+  Request Body:
+  {
+    "aggregateId": "uuid (obrigatório)"
+  }
+
+  Response: 200 OK (sem body)
+
+  Exemplo:
+  curl -X PUT http://localhost:8080/api/atendimento/finalizar \
+    -H "Content-Type: application/json" \
+    -d '{"aggregateId": "7effcbdf-05aa-472c-9c4f-d38f6620bb69"}'
+
+  ---
+  6. CANCELAR ATENDIMENTO
+
+  Endpoint: PUT /api/atendimento/cancelarHTTP Status: 200 OKDescrição: Cancela o atendimento (só permitido antes de CONFIRMADO)
+
+  Request Body:
+  {
+    "aggregateId": "uuid (obrigatório)"
+  }
+
+  Response: 200 OK (sem body)
+
+  Exemplo:
+  curl -X PUT http://localhost:8080/api/atendimento/cancelar \
+    -H "Content-Type: application/json" \
+    -d '{"aggregateId": "7effcbdf-05aa-472c-9c4f-d38f6620bb69"}'
+
+  ---
+  7. RECUPERAR ESTADO DO AGREGADO
+
+  Endpoint: GET /api/atendimento/{aggregateId}HTTP Status: 200 OKDescrição: Recupera estado atual do agregado via replay de eventos do Event Store
+
+  Path Parameter:
+  - aggregateId: UUID do atendimento
+
+  Response:
+  {
+    "aggregateId": "uuid",
+    "version": "number",
+    "atendimento": {
+      "id": "uuid",
+      "status": "SOLICITADO | AJUSTADO | CONFIRMADO | OCORRIDO | FINALIZADO | CANCELADO",
+      "protocolo": "string",
+      "tipodeocorrencia": "string",
+      "cliente": { ... },
+      "veiculo": { ... },
+      "servico": { ... },
+      "base": { ... },
+      "origem": { ... },
+      "prestador": { ... },
+      "destino": { ... },
+      "items": [ ... ],
+      "ocorrencias": [ ... ],
+      "dataHoraSolicitado": "timestamp",
+      "dataHoraAjustado": "timestamp",
+      "dataHoraConfirmado": "timestamp",
+      "dataHoraOcorrido": "timestamp",
+      "dataHoraFinalizado": "timestamp",
+      "dataHoraCancelado": "timestamp"
+    }
+  }
+
+  Exemplo:
+  curl -X GET http://localhost:8080/api/atendimento/7effcbdf-05aa-472c-9c4f-d38f6620bb69
+
+  ---
+  MÁQUINA DE ESTADOS
+
+  null → SOLICITADO → AJUSTADO → CONFIRMADO → OCORRIDO → FINALIZADO
+           ↓             ↓
+       CANCELADO    CANCELADO
+
+  Transições válidas:
+  - solicitar: null → SOLICITADO
+  - ajustar: SOLICITADO | AJUSTADO → AJUSTADO (múltiplas vezes)
+  - confirmar: SOLICITADO | AJUSTADO → CONFIRMADO
+  - ocorrencia: CONFIRMADO | OCORRIDO → OCORRIDO (múltiplas vezes)
+  - finalizar: CONFIRMADO | OCORRIDO → FINALIZADO
+  - cancelar: SOLICITADO | AJUSTADO → CANCELADO
+
+  ---
+  CÓDIGOS DE ERRO
+
+  - 400 Bad Request: Validação de payload falhou
+  - 409 Conflict: Transição de estado inválida (ex: tentar cancelar após confirmado)
+  - 404 Not Found: Agregado não encontrado (GET)
+  - 500 Internal Server Error: Erro interno
+
