@@ -65,7 +65,7 @@ public class SolicitarRequest {
         private String tipo;
 
         @NotBlank(message = "Número do documento é obrigatório")
-        private String numero;
+        private String doc;
     }
 
     @Data

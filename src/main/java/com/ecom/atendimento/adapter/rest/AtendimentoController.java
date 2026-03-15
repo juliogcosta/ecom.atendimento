@@ -58,7 +58,8 @@ public class AtendimentoController extends BaseController {
             @RequestHeader(name = "Authorization", required = true) String authorization,
             @RequestHeader(name = "X-Tenant-Id", required = true) String tenantId,
             @Valid @RequestBody SolicitarRequest request) {
-
+    	log.debug("\n request: {}", request.toString());
+    	
         // Extrai usuário autenticado do SecurityContext
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -388,7 +389,7 @@ public class AtendimentoController extends BaseController {
         return new Cliente(
                 dto.getId(),
                 dto.getNome(),
-                new DocFiscal(dto.getDocfiscal().getTipo(), dto.getDocfiscal().getNumero())
+                new DocFiscal(dto.getDocfiscal().getTipo(), dto.getDocfiscal().getDoc())
         );
     }
 
@@ -434,7 +435,7 @@ public class AtendimentoController extends BaseController {
         return new Prestador(
                 dto.getId(),
                 dto.getNome(),
-                new DocFiscal(dto.getDocfiscal().getTipo(), dto.getDocfiscal().getNumero())
+                new DocFiscal(dto.getDocfiscal().getTipo(), dto.getDocfiscal().getDoc())
         );
     }
 

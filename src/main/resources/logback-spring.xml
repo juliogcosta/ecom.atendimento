@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="ecom.atendimento"/>
+
+    <!-- Logging Levels: Read from application.yml -->
+    <springProperty scope="context" name="rootLogLevel" source="logging.level.root" defaultValue="INFO"/>
+    <springProperty scope="context" name="springLogLevel" source="logging.level.org.springframework" defaultValue="WARN"/>
+    <springProperty scope="context" name="hikariLogLevel" source="logging.level.com.zaxxer.hikari" defaultValue="WARN"/>
+    <springProperty scope="context" name="ecomLogLevel" source="logging.level.com.ecom" defaultValue="DEBUG"/>
+    <springProperty scope="context" name="hibernateLogLevel" source="logging.level.org.hibernate.SQL" defaultValue="DEBUG"/>
+
+    <!-- Appender CONSOLE para DEBUG - mensagem em CYAN -->
+    <appender name="CONSOLE_DEBUG" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %yellow(%-5level) [%thread] [%X{traceId:-}/%X{spanId:-}] [%X{x_tenant_id:-}] [%X{username:-}] %logger{36}: %cyan(%msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender CONSOLE para INFO/WARN/ERROR - mensagem SEM cor extra -->
+    <appender name="CONSOLE_OTHER" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %yellow(%-5level) [%thread] [%X{traceId:-}/%X{spanId:-}] [%X{x_tenant_id:-}] [%X{username:-}] %logger{36}: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender FILE - Grava logs em arquivo (configurado via application.yml) -->
+    <springProperty scope="context" name="logFileName" source="logging.file.name" defaultValue="/tmp/ecom_atendimento.log"/>
+    <springProperty scope="context" name="logFileMaxSize" source="logging.file.max-size" defaultValue="50MB"/>
+    <springProperty scope="context" name="logFileMaxHistory" source="logging.file.max-history" defaultValue="5"/>
+    <springProperty scope="context" name="logFileTotalSizeCap" source="logging.file.total-size-cap" defaultValue="200MB"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFileName}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logFileName}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>${logFileMaxSize}</maxFileSize>
+            <maxHistory>${logFileMaxHistory}</maxHistory>
+            <totalSizeCap>${logFileTotalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{traceId:-}/%X{spanId:-}] [%X{x_tenant_id:-}] [%X{username:-}] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Loggers: Use levels from application.yml -->
+    <logger name="org.springframework" level="${springLogLevel}"/>
+    <logger name="com.zaxxer.hikari" level="${hikariLogLevel}"/>
+    <logger name="com.ecom" level="${ecomLogLevel}"/>
+    <logger name="org.hibernate.SQL" level="${hibernateLogLevel}"/>
+
+    <!-- Root logger: Level controlled by application.yml -->
+    <root level="${rootLogLevel}">
+        <appender-ref ref="CONSOLE_DEBUG"/>
+        <appender-ref ref="CONSOLE_OTHER"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

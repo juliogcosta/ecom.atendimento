@@ -18,19 +18,19 @@ public class DocFiscal implements Serializable {
 
     private static final long serialVersionUID = 2650967156008879268L;
 	private final String tipo;    // CPF ou CNPJ
-    private final String numero;  // Número sem formatação
+    private final String doc;  // Número sem formatação
 
     @JsonCreator
     public DocFiscal(
             @JsonProperty("tipo") String tipo,
-            @JsonProperty("numero") String numero) {
+            @JsonProperty("doc") String doc) {
         if (tipo == null || tipo.trim().isEmpty()) {
             throw new IllegalArgumentException("Tipo do documento fiscal não pode ser vazio");
         }
-        if (numero == null || numero.trim().isEmpty()) {
+        if (doc == null || doc.trim().isEmpty()) {
             throw new IllegalArgumentException("Número do documento fiscal não pode ser vazio");
         }
         this.tipo = tipo.toUpperCase();
-        this.numero = numero.replaceAll("[^0-9]", ""); // Remove formatação
+        this.doc = doc.replaceAll("[^0-9]", ""); // Remove formatação
     }
 }

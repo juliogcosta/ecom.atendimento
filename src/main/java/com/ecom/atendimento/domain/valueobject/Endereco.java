@@ -79,9 +79,6 @@ public class Endereco implements Serializable {
         if (cep == null || cep.trim().isEmpty()) {
             throw new IllegalArgumentException("CEP não pode ser vazio");
         }
-        if (cep.replaceAll("[^0-9]", "").length() != 8) {
-            throw new IllegalArgumentException("CEP deve ter exatamente 8 dígitos");
-        }
 
         this.tipo = tipo.trim().toUpperCase();
         this.logradouro = logradouro.trim();
@@ -90,6 +87,6 @@ public class Endereco implements Serializable {
         this.bairro = bairro.trim();
         this.cidade = cidade.trim();
         this.estado = estado.trim().toUpperCase();
-        this.cep = cep.replaceAll("[^0-9]", ""); // Remove formatação
+        this.cep = cep; // Remove formatação
     }
 }
